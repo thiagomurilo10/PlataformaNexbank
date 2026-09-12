@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Api/PlataformaNexbank.Api.csproj" />
+    <Project Path="src/Application/PlataformaNexbank.Application.csproj" />
+    <Project Path="src/Domain/PlataformaNexbank.Domain.csproj" />
+    <Project Path="src/Infrastructure/PlataformaNexbank.Infrastructure.csproj" />
+  </Folder>
+</Solution>
