@@ -1,8 +1,17 @@
+using PlataformaNexbank.Domain.Entities;
+using PlataformaNexbank.Domain.Repositories;
+using PlataformaNexbank.Infrastructure.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+// Registra o repositório in-memory como implementação da interface do Domain.
+// Singleton: uma única instância viva durante toda a execução da aplicação,
+// necessário para o Dictionary in-memory não perder dados entre requisições.
+builder.Services.AddSingleton<IContaBancariaRepositorio, ContaBancariaRepositorioInMemory>();
 
 var app = builder.Build();
 
@@ -14,28 +23,25 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
+// Cria uma conta bancária nova, com saldo zero, a partir do titular informado.
+app.MapPost("/contas", (CriarContaRequest request, IContaBancariaRepositorio repositorio) =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+    var conta = new ContaBancaria(request.Titular);
+    repositorio.Adicionar(conta);
 
-app.MapGet("/weatherforecast", () =>
+    // 201 Created + header Location apontando para o recurso recém-criado.
+    return Results.Created($"/contas/{conta.Id}", conta);
+});
+
+// Busca uma conta pelo Id. {id:guid} rejeita valores que não sejam Guid válido.
+app.MapGet("/contas/{id:guid}", (Guid id, IContaBancariaRepositorio repositorio) =>
 {
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+    var conta = repositorio.ObterPorId(id);
+    return conta is not null ? Results.Ok(conta) : Results.NotFound();
+});
 
 app.Run();
 
-internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+// DTO de entrada do POST /contas.
+// Não expõe Id nem Saldo: o cliente não deve poder definir esses valores manualmente.
+public record CriarContaRequest(string Titular);

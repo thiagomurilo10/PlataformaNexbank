@@ -1,6 +1,17 @@
 @PlataformaNexbank.Api_HostAddress = http://localhost:5039
 
-GET {{PlataformaNexbank.Api_HostAddress}}/weatherforecast/
+### Criar conta
+POST {{PlataformaNexbank.Api_HostAddress}}/contas
+Content-Type: application/json
+
+{
+  "titular": "Thiago"
+}
+
+###
+
+### Buscar conta (troque {id} pelo Id ao criar uma conta, apenas teste)
+GET {{PlataformaNexbank.Api_HostAddress}}/contas/{id}
 Accept: application/json
 
 ###
