@@ -28,4 +28,28 @@ public class ContaBancariaTests
         // Aqui valido a invariante de domínio: ContaBancaria nunca deve existir com titular inválido.
         Assert.Throws<ArgumentException>(() => new ContaBancaria(titular));
     }
+
+    // ==============================================
+
+    [Fact]
+    public void Deve_Somar_Valor_Ao_Saldo_Quando_Depositar_Valor_Valido()
+    {
+        var conta = new ContaBancaria("João da Silva");
+
+        conta.Depositar(100); // ação sendo testada
+
+        Assert.Equal(100, conta.Saldo); // saldo deve refletir o depósito
+    }
+
+    [Theory]
+    [InlineData(0)]         // valor zero não é depósito válido
+    [InlineData(-1)]
+    [InlineData(-100)]      // valores negativos também são inválidos
+    public void Deve_Lancar_Excecao_Quando_Depositar_Valor_Invalido(decimal valor)
+    {
+        var conta = new ContaBancaria("João da Silva");
+
+        // depósito com valor <= 0 deve ser rejeitado pela regra de negócio
+        Assert.Throws<ArgumentException>(() => conta.Depositar(valor));
+    }
 }
