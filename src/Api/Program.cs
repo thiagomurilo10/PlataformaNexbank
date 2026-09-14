@@ -40,8 +40,19 @@ app.MapGet("/contas/{id:guid}", (Guid id, IContaBancariaRepositorio repositorio)
     return conta is not null ? Results.Ok(conta) : Results.NotFound();
 });
 
+// Deposita um valor na conta identificada por id.
+app.MapPost("/contas/{id:guid}/depositar", (Guid id, DepositoRequest request, IContaBancariaRepositorio repositorio) =>
+{
+    var conta = repositorio.ObterPorId(id);
+    if (conta is null) return Results.NotFound();
+
+    conta.Depositar(request.Valor);
+    return Results.Ok(conta);
+});
+
 app.Run();
 
 // DTO de entrada do POST /contas.
 // Não expõe Id nem Saldo: o cliente não deve poder definir esses valores manualmente.
 public record CriarContaRequest(string Titular);
+public record DepositoRequest(decimal Valor);

@@ -11,7 +11,15 @@ Content-Type: application/json
 ###
 
 ### Buscar conta (troque {id} pelo Id ao criar uma conta, apenas teste)
-GET {{PlataformaNexbank.Api_HostAddress}}/contas/{id}
+GET {{PlataformaNexbank.Api_HostAddress}}/contas/{584c1aac-d903-4eaa-b82b-47210f6e4b5e}
 Accept: application/json
 
 ###
+
+### Depositar (troque id pelo Id ao criar uma conta, apenas teste)
+POST {{PlataformaNexbank.Api_HostAddress}}/contas/{584c1aac-d903-4eaa-b82b-47210f6e4b5e}/depositar
+Content-Type: application/json
+
+{
+  "Valor": 0
+}
