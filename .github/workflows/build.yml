@@ -7,20 +7,23 @@ on:
     branches: [master]
 
 jobs:
-  build:
+    build:
     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout do código
+steps:
+    - name: Checkout do código
         uses: actions/checkout@v4
 
-      - name: Configurar .NET
+    - name: Configurar .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '10.0.x'
+            dotnet-version: '10.0.x'
 
-      - name: Restaurar dependências
-        run: dotnet restore
+    - name: Restaurar dependências
+      run: dotnet restore
 
-      - name: Testes
-        run: dotnet test --no-build --configuration Release
+    - name: Build
+      run: dotnet build PlataformaNexbank.slnx --no-restore --configuration Release
+
+    - name: Testes
+      run: dotnet test PlataformaNexbank.slnx --no-build --configuration ReleasetaformaNexbank.slnx --no-build --configuration Release
