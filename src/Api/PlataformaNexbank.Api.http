@@ -5,21 +5,37 @@ POST {{PlataformaNexbank.Api_HostAddress}}/contas
 Content-Type: application/json
 
 {
-  "titular": "Thiago"
+  "titular": "Thiago Murilo"
 }
 
 ###
 
-### Buscar conta (troque {id} pelo Id ao criar uma conta, apenas teste)
-GET {{PlataformaNexbank.Api_HostAddress}}/contas/{584c1aac-d903-4eaa-b82b-47210f6e4b5e}
+### Buscar conta (troque o Guid abaixo pelo Id retornado ao criar a conta)
+GET {{PlataformaNexbank.Api_HostAddress}}/contas/0be0a0e5-1930-404b-9c4c-c02e895d906d
 Accept: application/json
 
 ###
 
-### Depositar (troque id pelo Id ao criar uma conta, apenas teste)
-POST {{PlataformaNexbank.Api_HostAddress}}/contas/{584c1aac-d903-4eaa-b82b-47210f6e4b5e}/depositar
+### Depositar
+POST {{PlataformaNexbank.Api_HostAddress}}/contas/0be0a0e5-1930-404b-9c4c-c02e895d906d/depositar
 Content-Type: application/json
 
 {
-  "Valor": 0
+  "valor": 100
 }
+
+###
+
+### Sacar
+POST {{PlataformaNexbank.Api_HostAddress}}/contas/0be0a0e5-1930-404b-9c4c-c02e895d906d/sacar
+Content-Type: application/json
+
+{
+  "valor": 30
+}
+
+###
+
+### Histórico de transações
+GET {{PlataformaNexbank.Api_HostAddress}}/contas/489d8b5c-9430-4a05-a003-cb1a2799ee97/transacoes
+Accept: application/json
