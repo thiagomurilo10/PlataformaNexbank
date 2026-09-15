@@ -17,4 +17,12 @@ public class ContaBancaria
         Titular = titular;
         Saldo = 0;
     }
+
+    public void Depositar(decimal valor)
+    {
+        if (valor <= 0)
+            throw new ArgumentException("Valor do depósito deve ser positivo.", nameof(valor));
+
+        Saldo += valor;
+    }
 }

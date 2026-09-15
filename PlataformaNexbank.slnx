@@ -5,4 +5,5 @@
     <Project Path="src/Domain/PlataformaNexbank.Domain.csproj" />
     <Project Path="src/Infrastructure/PlataformaNexbank.Infrastructure.csproj" />
   </Folder>
+  <Project Path="tests/PlataformaNexbank.Domain.Tests/PlataformaNexbank.Domain.Tests.csproj" Id="a3d26baf-da49-45b9-a0ea-7542e26aa44f" />
 </Solution>
