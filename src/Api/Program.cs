@@ -1,4 +1,5 @@
 using PlataformaNexbank.Domain.Entities;
+using PlataformaNexbank.Domain.Exceptions;
 using PlataformaNexbank.Domain.Repositories;
 using PlataformaNexbank.Infrastructure.Repositories;
 
@@ -46,8 +47,42 @@ app.MapPost("/contas/{id:guid}/depositar", (Guid id, DepositoRequest request, IC
     var conta = repositorio.ObterPorId(id);
     if (conta is null) return Results.NotFound();
 
-    conta.Depositar(request.Valor);
-    return Results.Ok(conta);
+    try
+    {
+        conta.Depositar(request.Valor);
+        return Results.Ok(conta);
+    }
+    catch (ArgumentException ex)
+    {
+        return Results.BadRequest(new { erro = ex.Message });
+    }
+});
+
+// Saca um valor da conta identificada por id.
+// Trata exceções de domínio retornando 400, em vez de deixar a exceção estourar como 500.
+app.MapPost("/contas/{id:guid}/sacar", (Guid id, SaqueRequest request, IContaBancariaRepositorio repositorio) =>
+{
+    var conta = repositorio.ObterPorId(id);
+    if (conta is null) return Results.NotFound();
+
+    try
+    {
+        conta.Sacar(request.Valor);
+        return Results.Ok(conta);
+    }
+    catch (Exception ex) when (ex is ArgumentException or SaldoInsuficienteException)
+    {
+        return Results.BadRequest(new { erro = ex.Message });
+    }
+});
+
+// Retorna o histórico de transações (depósitos e saques) da conta.
+app.MapGet("/contas/{id:guid}/transacoes", (Guid id, IContaBancariaRepositorio repositorio) =>
+{
+    var conta = repositorio.ObterPorId(id);
+    if (conta is null) return Results.NotFound();
+
+    return Results.Ok(conta.Transacoes);
 });
 
 app.Run();
@@ -56,3 +91,4 @@ app.Run();
 // Não expõe Id nem Saldo: o cliente não deve poder definir esses valores manualmente.
 public record CriarContaRequest(string Titular);
 public record DepositoRequest(decimal Valor);
+public record SaqueRequest(decimal Valor);
