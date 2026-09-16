@@ -1,4 +1,5 @@
-﻿using PlataformaNexbank.Domain.Enums;
+﻿using NexBank.Domain.ValueObjects;
+using PlataformaNexbank.Domain.Enums;
 using PlataformaNexbank.Domain.Exceptions;
 
 namespace PlataformaNexbank.Domain.Entities;
@@ -10,7 +11,7 @@ public class ContaBancaria
 
     public Guid Id { get; private set; }
     public string Titular { get; private set; }
-    public decimal Saldo { get; private set; }
+    public Dinheiro Saldo { get; private set; }
 
     // quem consome a conta pode LER o histórico, mas não pode adicionar/remover itens diretamente na lista.
     public IReadOnlyList<Transacao> Transacoes => _transacoes.AsReadOnly();
@@ -24,31 +25,31 @@ public class ContaBancaria
 
         Id = Guid.NewGuid();
         Titular = titular;
-        Saldo = 0;
+        Saldo = new Dinheiro(0);
     }
 
     public void Depositar(decimal valor)
-    {
-        if (valor <= 0)
-            throw new ArgumentException("Valor do depósito deve ser positivo.", nameof(valor));
+{
+    var dinheiro = new Dinheiro(valor);
 
-        Saldo += valor;
-        // Registra o depósito no histórico da conta.
-        _transacoes.Add(new Transacao(TipoTransacao.Deposito, valor));
-    }
+    if (dinheiro.Valor <= 0)
+        throw new ArgumentException("Valor de depósito deve ser maior que zero.");
 
-    public void Sacar(decimal valor)
-    {
-        if (valor <= 0)
-            throw new ArgumentException("Valor do saque deve ser positivo.", nameof(valor));
+    Saldo = Saldo + dinheiro; // usa o operador + do VO
+    _transacoes.Add(new Transacao(TipoTransacao.Deposito, dinheiro));
+}
 
-        // não é permitido saldo negativo.
-        if (valor > Saldo)
-            throw new SaldoInsuficienteException(Saldo, valor);
+public void Sacar(decimal valor)
+{
+    var dinheiro = new Dinheiro(valor);
 
-        Saldo -= valor;
+    if (dinheiro.Valor <= 0)
+        throw new ArgumentException("Valor de saque deve ser maior que zero.");
 
-        // Registra o saque no histórico da conta.
-        _transacoes.Add(new Transacao(TipoTransacao.Saque, valor));
-    }
+    if (Saldo < dinheiro)   // usa o operador < do VO
+            throw new SaldoInsuficienteException(Saldo.Valor, dinheiro.Valor);
+
+    Saldo = Saldo - dinheiro;
+    _transacoes.Add(new Transacao(TipoTransacao.Saque, dinheiro));
+}
 }

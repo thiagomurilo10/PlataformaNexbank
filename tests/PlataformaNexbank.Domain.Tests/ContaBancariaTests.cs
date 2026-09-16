@@ -15,7 +15,7 @@ public class ContaBancariaTests
 
         // verifica se o construtor cumpriu o contrato esperado
         // saldo inicial zero e titular armazenado corretamente.
-        Assert.Equal(0, conta.Saldo);
+        Assert.Equal(0, conta.Saldo.Valor);
         Assert.Equal("João da Silva", conta.Titular);
     }
 
@@ -41,7 +41,7 @@ public class ContaBancariaTests
 
         conta.Depositar(100); // ação sendo testada
 
-        Assert.Equal(100, conta.Saldo); // saldo deve refletir o depósito
+        Assert.Equal(100, conta.Saldo.Valor); // saldo deve refletir o depósito
     }
 
     [Theory]
@@ -67,7 +67,7 @@ public class ContaBancariaTests
 
         conta.Sacar(40); // ação sendo testada
 
-        Assert.Equal(60, conta.Saldo); // saldo deve refletir o saque
+        Assert.Equal(60, conta.Saldo.Valor); // saldo deve refletir o saque
     }
 
     [Theory]
@@ -106,7 +106,7 @@ public class ContaBancariaTests
         // valida que o depósito gerou um registro no histórico da conta
         var transacao = Assert.Single(conta.Transacoes);
         Assert.Equal(TipoTransacao.Deposito, transacao.Tipo);
-        Assert.Equal(100, transacao.Valor);
+        Assert.Equal(100, transacao.Valor.Valor);
     }
 
     [Fact]
@@ -121,6 +121,6 @@ public class ContaBancariaTests
         Assert.Equal(2, conta.Transacoes.Count);
         var saque = conta.Transacoes[1];
         Assert.Equal(TipoTransacao.Saque, saque.Tipo);
-        Assert.Equal(30, saque.Valor);
+        Assert.Equal(30, saque.Valor.Valor);
     }
 }
