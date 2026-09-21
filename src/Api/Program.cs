@@ -1,6 +1,8 @@
+using Microsoft.EntityFrameworkCore;
 using PlataformaNexbank.Domain.Entities;
 using PlataformaNexbank.Domain.Exceptions;
 using PlataformaNexbank.Domain.Repositories;
+using PlataformaNexbank.Infrastructure.Persistence;
 using PlataformaNexbank.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,10 +11,15 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-// Registra o repositório in-memory como implementação da interface do Domain.
-// Singleton: uma única instância viva durante toda a execução da aplicação,
-// necessário para o Dictionary in-memory não perder dados entre requisições.
-builder.Services.AddSingleton<IContaBancariaRepositorio, ContaBancariaRepositorioInMemory>();
+// Registra o repositório EF Core como implementação da interface do Domain.
+// Scoped: uma instância por requisição HTTP, alinhada ao ciclo de vida do DbContext (que também é Scoped) — necessário para evitar captive dependency.
+builder.Services.AddScoped<IContaBancariaRepositorio, ContaBancariaRepositorioEfCore>();
+
+
+var connectionString = builder.Configuration.GetConnectionString("NexBankDb");
+
+builder.Services.AddDbContext<NexBankDbContext>(options =>
+    options.UseNpgsql(connectionString));
 
 var app = builder.Build();
 
