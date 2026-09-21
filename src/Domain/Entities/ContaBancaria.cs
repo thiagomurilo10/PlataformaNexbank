@@ -16,6 +16,13 @@ public class ContaBancaria
     // quem consome a conta pode LER o histórico, mas não pode adicionar/remover itens diretamente na lista.
     public IReadOnlyList<Transacao> Transacoes => _transacoes.AsReadOnly();
 
+    // Construtor privado exclusivo para materialização do EF Core.
+    private ContaBancaria()
+    {
+        Titular = null!;
+        Saldo = null!;
+    }
+
     public ContaBancaria(string titular)
     {
         if (string.IsNullOrWhiteSpace(titular))
