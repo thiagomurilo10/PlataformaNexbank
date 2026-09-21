@@ -11,6 +11,12 @@ public class Transacao
     public Dinheiro Valor { get; }
     public DateTime Data { get; }
 
+    // Construtor privado exclusivo para materialização do EF Core.
+    private Transacao()
+    {
+        Valor = null!;
+    }
+
     public Transacao(TipoTransacao tipo, Dinheiro valor)
     {
         Tipo = tipo;
