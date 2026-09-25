@@ -22,6 +22,12 @@ public class ContaBancariaRepositorioEfCore : IContaBancariaRepositorio
         _dbContext.SaveChanges();
     }
 
+    public void Atualizar(ContaBancaria conta)
+    {
+        // A entidade já está rastreada pelo DbContext (veio de ObterPorId no mesmo escopo), então basta persistir as mudanças pendentes.
+        _dbContext.SaveChanges();
+    }
+
     public ContaBancaria? ObterPorId(Guid id)
     {
         // Include necessário: por padrão o EF Core não carrega coleções owned

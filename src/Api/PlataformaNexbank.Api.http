@@ -11,13 +11,13 @@ Content-Type: application/json
 ###
 
 ### Buscar conta (troque o Guid abaixo pelo Id retornado ao criar a conta)
-GET {{PlataformaNexbank.Api_HostAddress}}/contas/db105bd4-997b-4de3-b87f-efab6ce49e4b
+GET {{PlataformaNexbank.Api_HostAddress}}/contas/6b0208b0-b135-4785-8e98-1e5bbe4ef78c
 Accept: application/json
 
 ###
 
 ### Depositar
-POST {{PlataformaNexbank.Api_HostAddress}}/contas/0be0a0e5-1930-404b-9c4c-c02e895d906d/depositar
+POST {{PlataformaNexbank.Api_HostAddress}}/contas/6b0208b0-b135-4785-8e98-1e5bbe4ef78c/depositar
 Content-Type: application/json
 
 {
@@ -27,7 +27,7 @@ Content-Type: application/json
 ###
 
 ### Sacar
-POST {{PlataformaNexbank.Api_HostAddress}}/contas/0be0a0e5-1930-404b-9c4c-c02e895d906d/sacar
+POST {{PlataformaNexbank.Api_HostAddress}}/contas/6b0208b0-b135-4785-8e98-1e5bbe4ef78c/sacar
 Content-Type: application/json
 
 {
@@ -37,5 +37,5 @@ Content-Type: application/json
 ###
 
 ### Histórico de transações
-GET {{PlataformaNexbank.Api_HostAddress}}/contas/489d8b5c-9430-4a05-a003-cb1a2799ee97/transacoes
+GET {{PlataformaNexbank.Api_HostAddress}}/contas/6b0208b0-b135-4785-8e98-1e5bbe4ef78c/transacoes
 Accept: application/json

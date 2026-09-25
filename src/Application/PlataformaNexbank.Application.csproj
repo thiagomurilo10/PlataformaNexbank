@@ -11,4 +11,8 @@
     <Compile Remove="Class1.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\PlataformaNexbank.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
