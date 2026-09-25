@@ -25,4 +25,9 @@ public class ContaBancariaRepositorioInMemory : IContaBancariaRepositorio
         // "não encontrado" como caso normal (retornando null).
         return _contas.TryGetValue(id, out var conta) ? conta : null;
     }
+
+    public void Atualizar(ContaBancaria conta)
+    {
+        // In-memory: a referência já está no dicionário/lista, nada a fazer.
+    }
 }
