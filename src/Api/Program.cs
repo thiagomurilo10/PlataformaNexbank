@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using NexBank.Application.DTOs;
+using NexBank.Application.UseCases;
 using PlataformaNexbank.Domain.Entities;
 using PlataformaNexbank.Domain.Exceptions;
 using PlataformaNexbank.Domain.Repositories;
@@ -15,6 +17,12 @@ builder.Services.AddOpenApi();
 // Scoped: uma instância por requisição HTTP, alinhada ao ciclo de vida do DbContext (que também é Scoped) — necessário para evitar captive dependency.
 builder.Services.AddScoped<IContaBancariaRepositorio, ContaBancariaRepositorioEfCore>();
 
+// Use cases registrados como Scoped, alinhados ao ciclo de vida do repositório/DbContext.
+builder.Services.AddScoped<CriarContaUseCase>();
+builder.Services.AddScoped<ObterContaUseCase>();
+builder.Services.AddScoped<DepositarUseCase>();
+builder.Services.AddScoped<SacarUseCase>();
+builder.Services.AddScoped<ListarTransacoesUseCase>();
 
 var connectionString = builder.Configuration.GetConnectionString("NexBankDb");
 
@@ -31,51 +39,42 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// Cria uma conta bancária nova, com saldo zero, a partir do titular informado.
-app.MapPost("/contas", (CriarContaRequest request, IContaBancariaRepositorio repositorio) =>
+// Cria uma conta nova. O endpoint não conhece mais o domínio diretamente — só repassa o DTO de request ao use case e devolve o DTO de response.
+app.MapPost("/contas", (CriarContaRequest request, CriarContaUseCase useCase) =>
 {
-    var conta = new ContaBancaria(request.Titular);
-    repositorio.Adicionar(conta);
-
-    // 201 Created + header Location apontando para o recurso recém-criado.
-    return Results.Created($"/contas/{conta.Id}", conta);
+    var response = useCase.Executar(request);
+    return Results.Created($"/contas/{response.Id}", response);
 });
 
-// Busca uma conta pelo Id. {id:guid} rejeita valores que não sejam Guid válido.
-app.MapGet("/contas/{id:guid}", (Guid id, IContaBancariaRepositorio repositorio) =>
+// Busca uma conta pelo Id. {id:guid} rejeita valores que não sejam Guid válido antes de chegar aqui.
+app.MapGet("/contas/{id:guid}", (Guid id, ObterContaUseCase useCase) =>
 {
-    var conta = repositorio.ObterPorId(id);
-    return conta is not null ? Results.Ok(conta) : Results.NotFound();
+    var response = useCase.Executar(id);
+    return response is not null ? Results.Ok(response) : Results.NotFound();
 });
 
-// Deposita um valor na conta identificada por id.
-app.MapPost("/contas/{id:guid}/depositar", (Guid id, DepositoRequest request, IContaBancariaRepositorio repositorio) =>
+// Deposita um valor na conta
+app.MapPost("/contas/{id:guid}/depositar", (Guid id, DepositarRequest request, DepositarUseCase useCase) =>
 {
-    var conta = repositorio.ObterPorId(id);
-    if (conta is null) return Results.NotFound();
-
     try
     {
-        conta.Depositar(request.Valor);
-        return Results.Ok(conta);
+        var response = useCase.Executar(id, request);
+        return response is not null ? Results.Ok(response) : Results.NotFound();
     }
     catch (ArgumentException ex)
     {
+        // Exceção de validação do domínio (ex.: valor <= 0) vira 400 aqui na borda da API.
         return Results.BadRequest(new { erro = ex.Message });
     }
 });
 
-// Saca um valor da conta identificada por id.
-// Trata exceções de domínio retornando 400, em vez de deixar a exceção estourar como 500.
-app.MapPost("/contas/{id:guid}/sacar", (Guid id, SaqueRequest request, IContaBancariaRepositorio repositorio) =>
+// Saca um valor da conta. Trata tanto validação de valor quanto regra de saldo insuficiente, ambas lançadas pelo domínio e propagadas sem tratamento pelo use case.
+app.MapPost("/contas/{id:guid}/sacar", (Guid id, SacarRequest request, SacarUseCase useCase) =>
 {
-    var conta = repositorio.ObterPorId(id);
-    if (conta is null) return Results.NotFound();
-
     try
     {
-        conta.Sacar(request.Valor);
-        return Results.Ok(conta);
+        var response = useCase.Executar(id, request);
+        return response is not null ? Results.Ok(response) : Results.NotFound();
     }
     catch (Exception ex) when (ex is ArgumentException or SaldoInsuficienteException)
     {
@@ -83,19 +82,11 @@ app.MapPost("/contas/{id:guid}/sacar", (Guid id, SaqueRequest request, IContaBan
     }
 });
 
-// Retorna o histórico de transações (depósitos e saques) da conta.
-app.MapGet("/contas/{id:guid}/transacoes", (Guid id, IContaBancariaRepositorio repositorio) =>
+// Retorna o histórico de transações da conta, já convertido para DTO
+app.MapGet("/contas/{id:guid}/transacoes", (Guid id, ListarTransacoesUseCase useCase) =>
 {
-    var conta = repositorio.ObterPorId(id);
-    if (conta is null) return Results.NotFound();
-
-    return Results.Ok(conta.Transacoes);
+    var response = useCase.Executar(id);
+    return response is not null ? Results.Ok(response) : Results.NotFound();
 });
 
 app.Run();
-
-// DTO de entrada do POST /contas.
-// Não expõe Id nem Saldo: o cliente não deve poder definir esses valores manualmente.
-public record CriarContaRequest(string Titular);
-public record DepositoRequest(decimal Valor);
-public record SaqueRequest(decimal Valor);

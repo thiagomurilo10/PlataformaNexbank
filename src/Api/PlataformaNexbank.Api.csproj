@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Application\PlataformaNexbank.Application.csproj" />
     <ProjectReference Include="..\Domain\PlataformaNexbank.Domain.csproj" />
   </ItemGroup>
   <ItemGroup>
