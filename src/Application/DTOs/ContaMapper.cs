@@ -1,6 +1,6 @@
 ﻿using PlataformaNexbank.Domain.Entities;
 
-namespace NexBank.Application.DTOs;
+namespace PlataformaNexbank.Application.DTOs;
 
 // Conversões manuais entre entidades de domínio e DTOs, evitando repetir a mesma lógica de mapeamento em cada use case.
 public static class ContaMapper

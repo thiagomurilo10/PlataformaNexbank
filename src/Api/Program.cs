@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using NexBank.Application.DTOs;
-using NexBank.Application.UseCases;
-using PlataformaNexbank.Domain.Entities;
+using PlataformaNexbank.Api;
+using PlataformaNexbank.Application.DTOs;
+using PlataformaNexbank.Application.UseCases;
 using PlataformaNexbank.Domain.Exceptions;
 using PlataformaNexbank.Domain.Repositories;
 using PlataformaNexbank.Infrastructure.Persistence;
@@ -29,7 +29,14 @@ var connectionString = builder.Configuration.GetConnectionString("NexBankDb");
 builder.Services.AddDbContext<NexBankDbContext>(options =>
     options.UseNpgsql(connectionString));
 
+// Registra o handler de exceções global (ApiExceptionHandler) e habilita o formato padrão de erro ProblemDetails (RFC 7807) nas respostas.
+builder.Services.AddExceptionHandler<ApiExceptionHandler>();
+builder.Services.AddProblemDetails();
+
 var app = builder.Build();
+
+//Qualquer exceção não tratada nos endpoints passa a ser capturada aqui pelo ApiExceptionHandler, em vez de precisar de try/catch manual em cada rota.
+app.UseExceptionHandler();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -56,30 +63,15 @@ app.MapGet("/contas/{id:guid}", (Guid id, ObterContaUseCase useCase) =>
 // Deposita um valor na conta
 app.MapPost("/contas/{id:guid}/depositar", (Guid id, DepositarRequest request, DepositarUseCase useCase) =>
 {
-    try
-    {
-        var response = useCase.Executar(id, request);
-        return response is not null ? Results.Ok(response) : Results.NotFound();
-    }
-    catch (ArgumentException ex)
-    {
-        // Exceção de validação do domínio (ex.: valor <= 0) vira 400 aqui na borda da API.
-        return Results.BadRequest(new { erro = ex.Message });
-    }
+    var response = useCase.Executar(id, request);
+    return response is not null ? Results.Ok(response) : Results.NotFound();
 });
 
 // Saca um valor da conta. Trata tanto validação de valor quanto regra de saldo insuficiente, ambas lançadas pelo domínio e propagadas sem tratamento pelo use case.
 app.MapPost("/contas/{id:guid}/sacar", (Guid id, SacarRequest request, SacarUseCase useCase) =>
 {
-    try
-    {
-        var response = useCase.Executar(id, request);
-        return response is not null ? Results.Ok(response) : Results.NotFound();
-    }
-    catch (Exception ex) when (ex is ArgumentException or SaldoInsuficienteException)
-    {
-        return Results.BadRequest(new { erro = ex.Message });
-    }
+    var response = useCase.Executar(id, request);
+    return response is not null ? Results.Ok(response) : Results.NotFound();
 });
 
 // Retorna o histórico de transações da conta, já convertido para DTO

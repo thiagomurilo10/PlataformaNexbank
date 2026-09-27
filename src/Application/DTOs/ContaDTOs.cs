@@ -1,4 +1,4 @@
-﻿namespace NexBank.Application.DTOs;
+﻿namespace PlataformaNexbank.Application.DTOs;
 
 // DTO de entrada para criação de conta 
 public record CriarContaRequest(string Titular);

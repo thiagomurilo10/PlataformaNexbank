@@ -1,7 +1,7 @@
-﻿using NexBank.Application.DTOs;
+﻿using PlataformaNexbank.Application.DTOs;
 using PlataformaNexbank.Domain.Repositories;
 
-namespace NexBank.Application.UseCases;
+namespace PlataformaNexbank.Application.UseCases;
 
 // Resultado explícito em vez de lançar exceção para "conta não encontrada":
 // deixa claro no tipo de retorno que esse caso existe, sem forçar o chamador a usar try/catch.
