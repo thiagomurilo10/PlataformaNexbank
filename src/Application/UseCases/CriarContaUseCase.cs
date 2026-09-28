@@ -1,8 +1,8 @@
-﻿using NexBank.Application.DTOs;
+﻿using PlataformaNexbank.Application.DTOs;
 using PlataformaNexbank.Domain.Entities;
 using PlataformaNexbank.Domain.Repositories;
 
-namespace NexBank.Application.UseCases;
+namespace PlataformaNexbank.Application.UseCases;
 
 public class CriarContaUseCase
 {

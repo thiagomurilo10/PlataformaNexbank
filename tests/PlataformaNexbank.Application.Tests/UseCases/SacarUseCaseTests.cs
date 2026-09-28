@@ -1,6 +1,6 @@
-﻿using NexBank.Application.DTOs;
-using NexBank.Application.UseCases;
+﻿using PlataformaNexbank.Application.DTOs;
 using PlataformaNexbank.Application.Tests.Fakes;
+using PlataformaNexbank.Application.UseCases;
 using PlataformaNexbank.Domain.Entities;
 using PlataformaNexbank.Domain.Exceptions;
 using Xunit;
