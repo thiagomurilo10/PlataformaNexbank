@@ -1,4 +1,4 @@
-﻿namespace NexBank.Domain.ValueObjects;
+﻿namespace PlataformaNexbank.Domain.ValueObjects;
 
 // Value Object que representa uma quantia monetária, é imutável e com igualdade por valor
 public record Dinheiro

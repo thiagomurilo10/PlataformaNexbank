@@ -6,29 +6,22 @@ namespace PlataformaNexbank.Domain.Tests;
 
 public class ContaBancariaTests
 {
-    // testando com um único cenário fixo, sem parâmetros.
     [Fact]
     public void Deve_Criar_Conta_Com_Saldo_Zero()
     {
-        // cria a conta (construtor já executa a regra de negócio).
-        var conta = new ContaBancaria("João da Silva");
+        var conta = new ContaBancaria(TitularBuilder.Padrao);
 
-        // verifica se o construtor cumpriu o contrato esperado
-        // saldo inicial zero e titular armazenado corretamente.
+        // Saldo inicial zero, titular armazenado e Id gerado.
         Assert.Equal(0, conta.Saldo.Valor);
-        Assert.Equal("João da Silva", conta.Titular);
+        Assert.Equal(TitularBuilder.Padrao, conta.Titular);
+        Assert.NotEqual(Guid.Empty, conta.Id);
     }
 
-    // teste parametrizado: o mesmo corpo de teste roda várias vezes, apenas mudando o valor de entrada a cada teste.
-    [Theory]
-    [InlineData("")]      // string vazia
-    [InlineData(" ")]     // string só com espaço (whitespace)
-    [InlineData(null)]    // valor nulo
-    public void Deve_Lancar_Excecao_Quando_Titular_Invalido(string? titular)
+    [Fact]
+    public void Deve_Lancar_Excecao_Quando_Titular_For_Nulo()
     {
-        // Assert.Throws executa a lambda e falha o teste se a exceção esperada (ArgumentException) NÃO for lançada.
-        // Aqui valido a invariante de domínio: ContaBancaria nunca deve existir com titular inválido.
-        Assert.Throws<ArgumentException>(() => new ContaBancaria(titular!));
+        // Assert.Throws exige o tipo exato: ArgumentNullException, não ArgumentException.
+        Assert.Throws<ArgumentNullException>(() => new ContaBancaria(null!));
     }
 
     // ==============================================
@@ -37,7 +30,7 @@ public class ContaBancariaTests
     [Fact]
     public void Deve_Somar_Valor_Ao_Saldo_Quando_Depositar_Valor_Valido()
     {
-        var conta = new ContaBancaria("João da Silva");
+        var conta = new ContaBancaria(TitularBuilder.Padrao);
 
         conta.Depositar(100); // ação sendo testada
 
@@ -50,7 +43,7 @@ public class ContaBancariaTests
     [InlineData(-100)]      // valores negativos também são inválidos
     public void Deve_Lancar_Excecao_Quando_Depositar_Valor_Invalido(decimal valor)
     {
-        var conta = new ContaBancaria("João da Silva");
+        var conta = new ContaBancaria(TitularBuilder.Padrao);
 
         // depósito com valor <= 0 deve ser rejeitado pela regra de negócio
         Assert.Throws<ArgumentException>(() => conta.Depositar(valor));
@@ -62,7 +55,7 @@ public class ContaBancariaTests
     [Fact]
     public void Deve_Subtrair_Valor_Do_Saldo_Quando_Sacar_Valor_Valido()
     {
-        var conta = new ContaBancaria("João da Silva");
+        var conta = new ContaBancaria(TitularBuilder.Padrao);
         conta.Depositar(100);
 
         conta.Sacar(40); // ação sendo testada
@@ -76,7 +69,7 @@ public class ContaBancariaTests
     [InlineData(-100)]
     public void Deve_Lancar_ArgumentException_Quando_Sacar_Valor_Invalido(decimal valor)
     {
-        var conta = new ContaBancaria("João da Silva");
+        var conta = new ContaBancaria(TitularBuilder.Padrao);
         conta.Depositar(100);
 
         // saque com valor <= 0 deve ser rejeitado pela regra de negócio
@@ -86,7 +79,7 @@ public class ContaBancariaTests
     [Fact]
     public void Deve_Lancar_SaldoInsuficienteException_Quando_Sacar_Valor_Maior_Que_Saldo()
     {
-        var conta = new ContaBancaria("João da Silva");
+        var conta = new ContaBancaria(TitularBuilder.Padrao);
         conta.Depositar(50);
 
         // regra de negócio: não é permitido saldo negativo
@@ -99,7 +92,7 @@ public class ContaBancariaTests
     [Fact]
     public void Deve_Registrar_Transacao_No_Historico_Quando_Depositar()
     {
-        var conta = new ContaBancaria("João da Silva");
+        var conta = new ContaBancaria(TitularBuilder.Padrao);
 
         conta.Depositar(100);
 
@@ -112,7 +105,7 @@ public class ContaBancariaTests
     [Fact]
     public void Deve_Registrar_Transacao_No_Historico_Quando_Sacar()
     {
-        var conta = new ContaBancaria("João da Silva");
+        var conta = new ContaBancaria(TitularBuilder.Padrao);
         conta.Depositar(100);
 
         conta.Sacar(30);
