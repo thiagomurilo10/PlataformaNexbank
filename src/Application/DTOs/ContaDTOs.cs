@@ -1,12 +1,13 @@
 ﻿namespace PlataformaNexbank.Application.DTOs;
 
 // DTO de entrada para criação de conta 
-public record CriarContaRequest(string Titular);
+public record CriarContaRequest(string Nome, string Cpf);
 
 // DTO de saída — expõe apenas tipos primitivos, nunca o Value Object Dinheiro do domínio.
 public record ContaResponse(
     Guid Id,
     string Titular,
+    string Cpf,
     decimal Saldo,
     string Moeda);
 

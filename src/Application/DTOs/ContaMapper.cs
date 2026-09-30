@@ -6,7 +6,7 @@ namespace PlataformaNexbank.Application.DTOs;
 public static class ContaMapper
 {
     public static ContaResponse ParaResponse(ContaBancaria conta) =>
-        new(conta.Id, conta.Titular, conta.Saldo.Valor, conta.Saldo.Moeda);
+        new(conta.Id, conta.Titular.Nome, conta.Titular.Cpf.Formatado, conta.Saldo.Valor, conta.Saldo.Moeda);
 
     public static TransacaoResponse ParaResponse(Transacao transacao) =>
         new(transacao.Tipo.ToString(), transacao.Valor.Valor, transacao.Valor.Moeda, transacao.Data);

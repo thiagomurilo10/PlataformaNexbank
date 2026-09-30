@@ -1,6 +1,7 @@
 ﻿using PlataformaNexbank.Application.Tests.Fakes;
 using PlataformaNexbank.Application.UseCases;
 using PlataformaNexbank.Domain.Entities;
+using PlataformaNexbank.Domain.Tests;
 
 namespace PlataformaNexbank.Application.Tests.UseCases;
 
@@ -9,7 +10,7 @@ public class ObterContaUseCaseTests
     [Fact]
     public void DeveRetornarContaExistente()
     {
-        var conta = new ContaBancaria("Thiago");
+        var conta = new ContaBancaria(TitularBuilder.Padrao);
         var repositorio = new ContaBancariaRepositorioFake();
         repositorio.Adicionar(conta);
         var useCase = new ObterContaUseCase(repositorio);
