@@ -13,6 +13,13 @@ public sealed record Titular
         Cpf = cpf;
     }
 
+    // Construtor privado exclusivo para materialização do EF Core.
+    private Titular()
+    {
+        Nome = null!;
+        Cpf = null!;
+    }
+
     public static Titular Criar(string? nome, Cpf cpf)
     {
         if (string.IsNullOrWhiteSpace(nome))
