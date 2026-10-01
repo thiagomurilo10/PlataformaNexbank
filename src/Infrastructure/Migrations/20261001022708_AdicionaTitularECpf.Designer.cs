@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PlataformaNexbank.Infrastructure.Persistence;
@@ -11,9 +12,11 @@ using PlataformaNexbank.Infrastructure.Persistence;
 namespace PlataformaNexbank.Infrastructure.Migrations
 {
     [DbContext(typeof(NexBankDbContext))]
-    partial class NexBankDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261001022708_AdicionaTitularECpf")]
+    partial class AdicionaTitularECpf
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
