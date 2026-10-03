@@ -1,5 +1,6 @@
 ﻿using PlataformaNexbank.Domain.Entities;
 using PlataformaNexbank.Domain.Repositories;
+using PlataformaNexbank.Domain.ValueObjects;
 using System;
 
 
@@ -16,4 +17,6 @@ public class ContaBancariaRepositorioFake : IContaBancariaRepositorio
         _contas.TryGetValue(id, out var conta) ? conta : null;
 
     public void Atualizar(ContaBancaria conta) => _contas[conta.Id] = conta;
+
+    public bool ExisteCpf(Cpf cpf) => _contas.Values.Any(c => c.Titular.Cpf == cpf);
 }
