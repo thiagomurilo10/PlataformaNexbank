@@ -2,6 +2,7 @@
 using PlataformaNexbank.Application.Tests.Fakes;
 using PlataformaNexbank.Application.UseCases;
 using PlataformaNexbank.Domain.Entities;
+using PlataformaNexbank.Domain.Tests;
 using System;
 using Xunit;
 
@@ -13,7 +14,7 @@ public class DepositarUseCaseTests
     public void Executar_ComContaExistente_DeveAtualizarSaldoERetornarResponse()
     {
         var repositorio = new ContaBancariaRepositorioFake();
-        var conta = new ContaBancaria("Thiago Murilo");
+        var conta = new ContaBancaria(TitularBuilder.Padrao);
         repositorio.Adicionar(conta);
 
         var useCase = new DepositarUseCase(repositorio);
@@ -38,7 +39,7 @@ public class DepositarUseCaseTests
     public void Executar_ComValorInvalido_DevePropagarExcecaoDoDominio()
     {
         var repositorio = new ContaBancariaRepositorioFake();
-        var conta = new ContaBancaria("Thiago Murilo");
+        var conta = new ContaBancaria(TitularBuilder.Padrao);
         repositorio.Adicionar(conta);
 
         var useCase = new DepositarUseCase(repositorio);

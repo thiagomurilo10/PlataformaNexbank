@@ -1,6 +1,6 @@
-﻿using NexBank.Domain.ValueObjects;
-using PlataformaNexbank.Domain.Enums;
+﻿using PlataformaNexbank.Domain.Enums;
 using PlataformaNexbank.Domain.Exceptions;
+using PlataformaNexbank.Domain.ValueObjects;
 
 namespace PlataformaNexbank.Domain.Entities;
 
@@ -10,10 +10,12 @@ public class ContaBancaria
     private readonly List<Transacao> _transacoes = new();
 
     public Guid Id { get; private set; }
-    public string Titular { get; private set; }
+
+    // Value Object: nome e CPF já chegam validados, a conta não repete essas regras.
+    public Titular Titular { get; private set; }
     public Dinheiro Saldo { get; private set; }
 
-    // quem consome a conta pode LER o histórico, mas não pode adicionar/remover itens diretamente na lista.
+    // Quem consome a conta pode LER o histórico, mas não alterar a lista diretamente.
     public IReadOnlyList<Transacao> Transacoes => _transacoes.AsReadOnly();
 
     // Construtor privado exclusivo para materialização do EF Core.
@@ -23,12 +25,10 @@ public class ContaBancaria
         Saldo = null!;
     }
 
-    public ContaBancaria(string titular)
+    public ContaBancaria(Titular titular)
     {
-        if (string.IsNullOrWhiteSpace(titular))
-        {
-            throw new ArgumentException("Titular não pode ser vazio.", nameof(titular));
-        }
+        // Titular sempre é válido por construção; só é preciso garantir que existe.
+        ArgumentNullException.ThrowIfNull(titular);
 
         Id = Guid.NewGuid();
         Titular = titular;
@@ -36,27 +36,27 @@ public class ContaBancaria
     }
 
     public void Depositar(decimal valor)
-{
-    var dinheiro = new Dinheiro(valor);
+    {
+        var dinheiro = new Dinheiro(valor);
 
-    if (dinheiro.Valor <= 0)
-        throw new ArgumentException("Valor de depósito deve ser maior que zero.");
+        if (dinheiro.Valor <= 0)
+            throw new ArgumentException("Valor de depósito deve ser maior que zero.");
 
     Saldo = Saldo + dinheiro; // usa o operador + do VO
-    _transacoes.Add(new Transacao(TipoTransacao.Deposito, dinheiro));
-}
+        _transacoes.Add(new Transacao(TipoTransacao.Deposito, dinheiro));
+    }
 
-public void Sacar(decimal valor)
-{
-    var dinheiro = new Dinheiro(valor);
+    public void Sacar(decimal valor)
+    {
+        var dinheiro = new Dinheiro(valor);
 
-    if (dinheiro.Valor <= 0)
-        throw new ArgumentException("Valor de saque deve ser maior que zero.");
+        if (dinheiro.Valor <= 0)
+            throw new ArgumentException("Valor de saque deve ser maior que zero.");
 
     if (Saldo < dinheiro)   // usa o operador < do VO
             throw new SaldoInsuficienteException(Saldo.Valor, dinheiro.Valor);
 
-    Saldo = Saldo - dinheiro;
-    _transacoes.Add(new Transacao(TipoTransacao.Saque, dinheiro));
-}
+        Saldo = Saldo - dinheiro;
+        _transacoes.Add(new Transacao(TipoTransacao.Saque, dinheiro));
+    }
 }

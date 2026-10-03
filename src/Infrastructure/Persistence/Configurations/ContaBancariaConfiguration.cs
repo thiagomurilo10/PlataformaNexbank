@@ -12,9 +12,31 @@ public class ContaBancariaConfiguration : IEntityTypeConfiguration<ContaBancaria
 
         builder.HasKey(c => c.Id);
 
-        builder.Property(c => c.Titular)
-            .IsRequired()
-            .HasMaxLength(200);
+        // Titular (Value Object) como Owned Type: Nome e Cpf viram colunas da própria tabela Contas.
+        builder.OwnsOne(c => c.Titular, titular =>
+        {
+            titular.Property(t => t.Nome)
+                .HasColumnName("TitularNome")
+                .IsRequired()
+                .HasMaxLength(200);
+
+            // Cpf aninhado dentro de Titular. O índice único garante, no banco, que não existem duas contas com o mesmo CPF.
+            titular.OwnsOne(t => t.Cpf, cpf =>
+            {
+                cpf.Property(c => c.Numero)
+                    .HasColumnName("Cpf")
+                    .IsRequired()
+                    .HasMaxLength(11);
+
+                cpf.HasIndex(c => c.Numero)
+                    .IsUnique()
+                    .HasDatabaseName("IX_Contas_Cpf");
+            });
+
+            titular.Navigation(t => t.Cpf).IsRequired();
+        });
+
+        builder.Navigation(c => c.Titular).IsRequired();
 
         // Dinheiro (Value Object) mapeado como Owned Type: sem tabela própria,
         // suas colunas (Valor, Moeda) viram colunas na própria tabela Contas.

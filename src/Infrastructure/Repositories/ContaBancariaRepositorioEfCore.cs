@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PlataformaNexbank.Domain.Entities;
 using PlataformaNexbank.Domain.Repositories;
+using PlataformaNexbank.Domain.ValueObjects;
 using PlataformaNexbank.Infrastructure.Persistence;
 
 namespace PlataformaNexbank.Infrastructure.Repositories;
@@ -35,5 +36,11 @@ public class ContaBancariaRepositorioEfCore : IContaBancariaRepositorio
         return _dbContext.Contas
             .Include(c => c.Transacoes)
             .FirstOrDefault(c => c.Id == id);
+    }
+
+    public bool ExisteCpf(Cpf cpf)
+    {
+        // Compara pelo Numero (string): o EF traduz para SQL e usa o índice IX_Contas_Cpf.
+        return _dbContext.Contas.Any(c => c.Titular.Cpf.Numero == cpf.Numero);
     }
 }

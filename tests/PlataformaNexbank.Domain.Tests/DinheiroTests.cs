@@ -1,4 +1,4 @@
-﻿using NexBank.Domain.ValueObjects;
+﻿using PlataformaNexbank.Domain.ValueObjects;
 
 namespace PlataformaNexbank.Domain.Tests;
 

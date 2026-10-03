@@ -1,5 +1,5 @@
-﻿using NexBank.Domain.ValueObjects;
-using PlataformaNexbank.Domain.Enums;
+﻿using PlataformaNexbank.Domain.Enums;
+using PlataformaNexbank.Domain.ValueObjects;
 
 namespace PlataformaNexbank.Domain.Entities;
 
