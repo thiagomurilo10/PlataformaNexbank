@@ -18,8 +18,8 @@ public class ApiExceptionHandler : IExceptionHandler
         var (status, title) = exception switch
         {
             SaldoInsuficienteException => (StatusCodes.Status400BadRequest, exception.Message),
+            CpfJaCadastradoException => (StatusCodes.Status409Conflict, exception.Message),
             ArgumentException => (StatusCodes.Status400BadRequest, exception.Message),
-            KeyNotFoundException => (StatusCodes.Status404NotFound, exception.Message),
             _ => (StatusCodes.Status500InternalServerError, "Erro interno no servidor.")
         };
 
