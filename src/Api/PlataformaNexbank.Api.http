@@ -5,13 +5,33 @@ POST {{PlataformaNexbank.Api_HostAddress}}/contas
 Content-Type: application/json
 
 {
-  "titular": "Thiago Murilo"
+  "nome": "Maria Silva", "cpf": "529.982.247-25"
+}
+
+###
+
+### Criar conta - nome curto (esperado 400)
+POST {{PlataformaNexbank.Api_HostAddress}}/contas
+Content-Type: application/json
+
+{
+  "nome": "Jo", "cpf": "111.444.777-35"
+}
+
+###
+
+### Criar conta - CPF duplicado (esperado 409)
+POST {{PlataformaNexbank.Api_HostAddress}}/contas
+Content-Type: application/json
+
+{
+  "nome": "Maria Silva", "cpf": "529.982.247-25"
 }
 
 ###
 
 ### Buscar conta (troque o Guid abaixo pelo Id retornado ao criar a conta)
-GET {{PlataformaNexbank.Api_HostAddress}}/contas/6b0208b0-b135-4785-8e98-1e5bbe4ef78c
+GET {{PlataformaNexbank.Api_HostAddress}}/contas/f41fcc1c-f057-4769-a195-023438f6fbca
 Accept: application/json
 
 ###
