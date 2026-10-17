@@ -29,7 +29,7 @@ public class ContaBancariaRepositorioEfCore : IContaBancariaRepositorio
         _dbContext.SaveChanges();
     }
 
-    public ContaBancaria? ObterPorId(Guid id)
+    public ContaBancaria? ObterPorId(ContaId id)
     {
         // Include necessário: por padrão o EF Core não carrega coleções owned
         // automaticamente (lazy loading não está habilitado neste projeto).
