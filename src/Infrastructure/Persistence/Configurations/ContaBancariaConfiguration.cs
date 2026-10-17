@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PlataformaNexbank.Domain.Entities;
+using PlataformaNexbank.Domain.ValueObjects;
 
 namespace PlataformaNexbank.Infrastructure.Persistence.Configurations;
 
@@ -11,6 +12,12 @@ public class ContaBancariaConfiguration : IEntityTypeConfiguration<ContaBancaria
         builder.ToTable("Contas");
 
         builder.HasKey(c => c.Id);
+
+        // ContaId é um tipo do domínio; no banco continua sendo uuid (Guid), sem alterar o schema.
+        // ValueGeneratedNever: o Id é gerado pelo domínio (ContaId.Novo), não pelo EF.
+        builder.Property(c => c.Id)
+            .HasConversion(id => id.Valor, valor => ContaId.De(valor))
+            .ValueGeneratedNever();
 
         // Titular (Value Object) como Owned Type: Nome e Cpf viram colunas da própria tabela Contas.
         builder.OwnsOne(c => c.Titular, titular =>
