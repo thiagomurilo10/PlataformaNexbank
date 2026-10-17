@@ -2,6 +2,7 @@
 using PlataformaNexbank.Application.UseCases;
 using PlataformaNexbank.Domain.Entities;
 using PlataformaNexbank.Domain.Tests;
+using PlataformaNexbank.Domain.ValueObjects;
 
 namespace PlataformaNexbank.Application.Tests.UseCases;
 
@@ -28,7 +29,7 @@ public class ListarTransacoesUseCaseTests
         var repositorio = new ContaBancariaRepositorioFake();
         var useCase = new ListarTransacoesUseCase(repositorio);
 
-        var response = useCase.Executar(Guid.NewGuid());
+        var response = useCase.Executar(ContaId.Novo());
 
         Assert.Null(response);
     }
