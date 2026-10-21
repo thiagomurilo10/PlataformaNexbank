@@ -3,6 +3,7 @@ using PlataformaNexbank.Application.Tests.Fakes;
 using PlataformaNexbank.Application.UseCases;
 using PlataformaNexbank.Domain.Entities;
 using PlataformaNexbank.Domain.Tests;
+using PlataformaNexbank.Domain.ValueObjects;
 using System;
 using Xunit;
 
@@ -30,7 +31,7 @@ public class DepositarUseCaseTests
         var repositorio = new ContaBancariaRepositorioFake();
         var useCase = new DepositarUseCase(repositorio);
 
-        var response = useCase.Executar(Guid.NewGuid(), new DepositarRequest(100m));
+        var response = useCase.Executar(ContaId.Novo(), new DepositarRequest(100m));
 
         Assert.Null(response);
     }

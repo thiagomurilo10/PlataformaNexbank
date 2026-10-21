@@ -2,8 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using PlataformaNexbank.Api;
 using PlataformaNexbank.Application.DTOs;
 using PlataformaNexbank.Application.UseCases;
-using PlataformaNexbank.Domain.Exceptions;
 using PlataformaNexbank.Domain.Repositories;
+using PlataformaNexbank.Domain.ValueObjects;
 using PlataformaNexbank.Infrastructure.Persistence;
 using PlataformaNexbank.Infrastructure.Repositories;
 
@@ -53,31 +53,31 @@ app.MapPost("/contas", (CriarContaRequest request, CriarContaUseCase useCase) =>
     return Results.Created($"/contas/{response.Id}", response);
 });
 
-// Busca uma conta pelo Id. {id:guid} rejeita valores que não sejam Guid válido antes de chegar aqui.
+// Busca uma conta pelo Id. {id:guid} rejeita valores que não sejam Guid válido; Guid.Empty é rejeitado por ContaId.De (400).
 app.MapGet("/contas/{id:guid}", (Guid id, ObterContaUseCase useCase) =>
 {
-    var response = useCase.Executar(id);
+    var response = useCase.Executar(ContaId.De(id));
     return response is not null ? Results.Ok(response) : Results.NotFound();
 });
 
 // Deposita um valor na conta
 app.MapPost("/contas/{id:guid}/depositar", (Guid id, DepositarRequest request, DepositarUseCase useCase) =>
 {
-    var response = useCase.Executar(id, request);
+    var response = useCase.Executar(ContaId.De(id), request);
     return response is not null ? Results.Ok(response) : Results.NotFound();
 });
 
 // Saca um valor da conta. Trata tanto validação de valor quanto regra de saldo insuficiente, ambas lançadas pelo domínio e propagadas sem tratamento pelo use case.
 app.MapPost("/contas/{id:guid}/sacar", (Guid id, SacarRequest request, SacarUseCase useCase) =>
 {
-    var response = useCase.Executar(id, request);
+    var response = useCase.Executar(ContaId.De(id), request);
     return response is not null ? Results.Ok(response) : Results.NotFound();
 });
 
 // Retorna o histórico de transações da conta, já convertido para DTO
 app.MapGet("/contas/{id:guid}/transacoes", (Guid id, ListarTransacoesUseCase useCase) =>
 {
-    var response = useCase.Executar(id);
+    var response = useCase.Executar(ContaId.De(id));
     return response is not null ? Results.Ok(response) : Results.NotFound();
 });
 

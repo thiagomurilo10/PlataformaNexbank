@@ -4,6 +4,7 @@ using PlataformaNexbank.Application.UseCases;
 using PlataformaNexbank.Domain.Entities;
 using PlataformaNexbank.Domain.Exceptions;
 using PlataformaNexbank.Domain.Tests;
+using PlataformaNexbank.Domain.ValueObjects;
 using Xunit;
 
 
@@ -45,7 +46,7 @@ public class SacarUseCaseTests
         var repositorio = new ContaBancariaRepositorioFake();
         var useCase = new SacarUseCase(repositorio);
 
-        var response = useCase.Executar(Guid.NewGuid(), new SacarRequest(10m));
+        var response = useCase.Executar(ContaId.Novo(), new SacarRequest(10m));
 
         Assert.Null(response);
     }

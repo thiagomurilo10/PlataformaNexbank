@@ -14,7 +14,7 @@ public class ContaBancariaTests
         // Saldo inicial zero, titular armazenado e Id gerado.
         Assert.Equal(0, conta.Saldo.Valor);
         Assert.Equal(TitularBuilder.Padrao, conta.Titular);
-        Assert.NotEqual(Guid.Empty, conta.Id);
+        Assert.NotEqual(Guid.Empty, conta.Id.Valor);
     }
 
     [Fact]

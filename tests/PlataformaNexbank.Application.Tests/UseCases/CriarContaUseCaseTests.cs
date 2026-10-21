@@ -2,6 +2,7 @@
 using PlataformaNexbank.Application.Tests.Fakes;
 using PlataformaNexbank.Application.UseCases;
 using PlataformaNexbank.Domain.Exceptions;
+using PlataformaNexbank.Domain.ValueObjects;
 
 namespace PlataformaNexbank.Application.Tests.UseCases;
 
@@ -23,7 +24,7 @@ public class CriarContaUseCaseTests
         Assert.Equal("Maria Silva", response.Titular);
         Assert.Equal("529.982.247-25", response.Cpf);
         Assert.Equal(0, response.Saldo);
-        Assert.NotNull(_repositorio.ObterPorId(response.Id));
+        Assert.NotNull(_repositorio.ObterPorId(ContaId.De(response.Id)));
     }
 
     [Theory]

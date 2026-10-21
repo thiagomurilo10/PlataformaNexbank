@@ -1,5 +1,6 @@
 ﻿using PlataformaNexbank.Application.DTOs;
 using PlataformaNexbank.Domain.Repositories;
+using PlataformaNexbank.Domain.ValueObjects;
 
 namespace PlataformaNexbank.Application.UseCases;
 
@@ -12,7 +13,7 @@ public class SacarUseCase
         _repositorio = repositorio;
     }
 
-    public ContaResponse? Executar(Guid id, SacarRequest request)
+    public ContaResponse? Executar(ContaId id, SacarRequest request)
     {
         var conta = _repositorio.ObterPorId(id);
         if (conta is null) return null;
