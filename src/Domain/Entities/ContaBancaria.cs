@@ -4,7 +4,7 @@ using PlataformaNexbank.Domain.ValueObjects;
 
 namespace PlataformaNexbank.Domain.Entities;
 
-public class ContaBancaria : Entity<ContaId>
+public class ContaBancaria : AggregateRoot<ContaId>
 {
     // Lista interna e mutável — só a própria entidade pode adicionar transações.
     private readonly List<Transacao> _transacoes = new();
