@@ -19,6 +19,12 @@ public class ContaBancariaConfiguration : IEntityTypeConfiguration<ContaBancaria
             .HasConversion(id => id.Valor, valor => ContaId.De(valor))
             .ValueGeneratedNever();
 
+        // Enum gravado como texto: legível no banco e imune a reordenação do enum.
+        builder.Property(c => c.Status)
+            .HasConversion<string>()
+            .HasMaxLength(20)
+            .IsRequired();
+
         // Titular (Value Object) como Owned Type: Nome e Cpf viram colunas da própria tabela Contas.
         builder.OwnsOne(c => c.Titular, titular =>
         {

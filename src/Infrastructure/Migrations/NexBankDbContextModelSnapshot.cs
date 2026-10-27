@@ -25,8 +25,12 @@ namespace PlataformaNexbank.Infrastructure.Migrations
             modelBuilder.Entity("PlataformaNexbank.Domain.Entities.ContaBancaria", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
 
                     b.HasKey("Id");
 
@@ -52,55 +56,10 @@ namespace PlataformaNexbank.Infrastructure.Migrations
 
                             b1.HasKey("ContaBancariaId");
 
-                            b1.ToTable("Contas", (string)null);
+                            b1.ToTable("Contas");
 
                             b1.WithOwner()
                                 .HasForeignKey("ContaBancariaId");
-                        });
-
-                    b.OwnsOne("PlataformaNexbank.Domain.ValueObjects.Titular", "Titular", b1 =>
-                        {
-                            b1.Property<Guid>("ContaBancariaId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<string>("Nome")
-                                .IsRequired()
-                                .HasMaxLength(200)
-                                .HasColumnType("character varying(200)")
-                                .HasColumnName("TitularNome");
-
-                            b1.HasKey("ContaBancariaId");
-
-                            b1.ToTable("Contas", (string)null);
-
-                            b1.WithOwner()
-                                .HasForeignKey("ContaBancariaId");
-
-                            b1.OwnsOne("PlataformaNexbank.Domain.ValueObjects.Cpf", "Cpf", b2 =>
-                                {
-                                    b2.Property<Guid>("TitularContaBancariaId")
-                                        .HasColumnType("uuid");
-
-                                    b2.Property<string>("Numero")
-                                        .IsRequired()
-                                        .HasMaxLength(11)
-                                        .HasColumnType("character varying(11)")
-                                        .HasColumnName("Cpf");
-
-                                    b2.HasKey("TitularContaBancariaId");
-
-                                    b2.HasIndex("Numero")
-                                        .IsUnique()
-                                        .HasDatabaseName("IX_Contas_Cpf");
-
-                                    b2.ToTable("Contas", (string)null);
-
-                                    b2.WithOwner()
-                                        .HasForeignKey("TitularContaBancariaId");
-                                });
-
-                            b1.Navigation("Cpf")
-                                .IsRequired();
                         });
 
                     b.OwnsMany("PlataformaNexbank.Domain.Entities.Transacao", "Transacoes", b1 =>
@@ -148,13 +107,58 @@ namespace PlataformaNexbank.Infrastructure.Migrations
 
                                     b2.HasKey("TransacaoId");
 
-                                    b2.ToTable("TransacaoHistorico", (string)null);
+                                    b2.ToTable("TransacaoHistorico");
 
                                     b2.WithOwner()
                                         .HasForeignKey("TransacaoId");
                                 });
 
                             b1.Navigation("Valor")
+                                .IsRequired();
+                        });
+
+                    b.OwnsOne("PlataformaNexbank.Domain.ValueObjects.Titular", "Titular", b1 =>
+                        {
+                            b1.Property<Guid>("ContaBancariaId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Nome")
+                                .IsRequired()
+                                .HasMaxLength(200)
+                                .HasColumnType("character varying(200)")
+                                .HasColumnName("TitularNome");
+
+                            b1.HasKey("ContaBancariaId");
+
+                            b1.ToTable("Contas");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ContaBancariaId");
+
+                            b1.OwnsOne("PlataformaNexbank.Domain.ValueObjects.Cpf", "Cpf", b2 =>
+                                {
+                                    b2.Property<Guid>("TitularContaBancariaId")
+                                        .HasColumnType("uuid");
+
+                                    b2.Property<string>("Numero")
+                                        .IsRequired()
+                                        .HasMaxLength(11)
+                                        .HasColumnType("character varying(11)")
+                                        .HasColumnName("Cpf");
+
+                                    b2.HasKey("TitularContaBancariaId");
+
+                                    b2.HasIndex("Numero")
+                                        .IsUnique()
+                                        .HasDatabaseName("IX_Contas_Cpf");
+
+                                    b2.ToTable("Contas");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("TitularContaBancariaId");
+                                });
+
+                            b1.Navigation("Cpf")
                                 .IsRequired();
                         });
 
