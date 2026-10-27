@@ -20,7 +20,8 @@ public class DepositarUseCase
         var conta = _repositorio.ObterPorId(id);
         if (conta is null) return null;
 
-        conta.Depositar(request.Valor); // pode lançar ArgumentException — deixado propagar de propósito
+        // Pode lançar ArgumentException ou ContaNaoAtivaException: deixadas propagar para o ApiExceptionHandler.
+        conta.Depositar(request.Valor);
         _repositorio.Atualizar(conta);
 
         return ContaMapper.ParaResponse(conta);
