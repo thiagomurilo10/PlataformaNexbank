@@ -23,6 +23,9 @@ builder.Services.AddScoped<ObterContaUseCase>();
 builder.Services.AddScoped<DepositarUseCase>();
 builder.Services.AddScoped<SacarUseCase>();
 builder.Services.AddScoped<ListarTransacoesUseCase>();
+builder.Services.AddScoped<BloquearContaUseCase>();
+builder.Services.AddScoped<DesbloquearContaUseCase>();
+builder.Services.AddScoped<EncerrarContaUseCase>();
 
 var connectionString = builder.Configuration.GetConnectionString("NexBankDb");
 
@@ -76,6 +79,26 @@ app.MapPost("/contas/{id:guid}/sacar", (Guid id, SacarRequest request, SacarUseC
 
 // Retorna o histórico de transações da conta, já convertido para DTO
 app.MapGet("/contas/{id:guid}/transacoes", (Guid id, ListarTransacoesUseCase useCase) =>
+{
+    var response = useCase.Executar(ContaId.De(id));
+    return response is not null ? Results.Ok(response) : Results.NotFound();
+});
+
+// Transições de status da conta. Sem body: a ação está no próprio verbo da rota.
+// Regras de transição ficam no agregado; violações viram 422 via ApiExceptionHandler.
+app.MapPost("/contas/{id:guid}/bloquear", (Guid id, BloquearContaUseCase useCase) =>
+{
+    var response = useCase.Executar(ContaId.De(id));
+    return response is not null ? Results.Ok(response) : Results.NotFound();
+});
+
+app.MapPost("/contas/{id:guid}/desbloquear", (Guid id, DesbloquearContaUseCase useCase) =>
+{
+    var response = useCase.Executar(ContaId.De(id));
+    return response is not null ? Results.Ok(response) : Results.NotFound();
+});
+
+app.MapPost("/contas/{id:guid}/encerrar", (Guid id, EncerrarContaUseCase useCase) =>
 {
     var response = useCase.Executar(ContaId.De(id));
     return response is not null ? Results.Ok(response) : Results.NotFound();
