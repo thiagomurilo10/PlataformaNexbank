@@ -71,3 +71,58 @@ GET {{PlataformaNexbank.Api_HostAddress}}/contas/11111111-1111-1111-1111-1111111
 Accept: application/json
 
 ###
+
+# @name contaStatus
+POST {{PlataformaNexbank.Api_HostAddress}}/contas
+Content-Type: application/json
+
+{
+  "nome": "Ana Souza",
+  "cpf": "11144477735"
+}
+
+### Bloquear (200, status Bloqueada)
+POST {{PlataformaNexbank.Api_HostAddress}}/contas/{{contaStatus.response.body.$.id}}/bloquear
+
+### Depositar em conta bloqueada (422)
+POST {{PlataformaNexbank.Api_HostAddress}}/contas/{{contaStatus.response.body.$.id}}/depositar
+Content-Type: application/json
+
+{
+  "valor": 100
+}
+
+### Bloquear de novo (422, transição inválida)
+POST {{PlataformaNexbank.Api_HostAddress}}/contas/{{contaStatus.response.body.$.id}}/bloquear
+
+### Desbloquear (200, status Ativa)
+POST {{PlataformaNexbank.Api_HostAddress}}/contas/{{contaStatus.response.body.$.id}}/desbloquear
+
+### Depositar (200)
+POST {{PlataformaNexbank.Api_HostAddress}}/contas/{{contaStatus.response.body.$.id}}/depositar
+Content-Type: application/json
+
+{
+  "valor": 100
+}
+
+### Encerrar com saldo (422)
+POST {{PlataformaNexbank.Api_HostAddress}}/contas/{{contaStatus.response.body.$.id}}/encerrar
+
+### Sacar tudo (200, saldo 0)
+POST {{PlataformaNexbank.Api_HostAddress}}/contas/{{contaStatus.response.body.$.id}}/sacar
+Content-Type: application/json
+
+{
+  "valor": 100
+}
+
+### Encerrar (200, status Encerrada)
+POST {{PlataformaNexbank.Api_HostAddress}}/contas/{{contaStatus.response.body.$.id}}/encerrar
+
+### Encerrar de novo (422)
+POST {{PlataformaNexbank.Api_HostAddress}}/contas/{{contaStatus.response.body.$.id}}/encerrar
+
+### Saque acima do saldo em outra conta (agora 422, antes 400)
+### Bloquear conta inexistente (404)
+POST {{PlataformaNexbank.Api_HostAddress}}/contas/00000000-0000-0000-0000-000000000001/bloquear

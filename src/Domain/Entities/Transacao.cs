@@ -4,7 +4,7 @@ using PlataformaNexbank.Domain.ValueObjects;
 namespace PlataformaNexbank.Domain.Entities;
 
 // Representa uma movimentação financeira (depósito ou saque) já ocorrida.
-// É imutável: uma vez criada, seus dados não podem ser alterados, pois representa um histórico
+// Entidade interna do agregado ContaBancaria: imutável e criada apenas pela raiz.
 public class Transacao
 {
     public TipoTransacao Tipo { get; }
@@ -17,7 +17,9 @@ public class Transacao
         Valor = null!;
     }
 
-    public Transacao(TipoTransacao tipo, Dinheiro valor)
+    // internal: só o agregado ContaBancaria (mesmo assembly) cria transações,
+    // garantindo que toda transação corresponda a uma alteração de saldo.
+    internal Transacao(TipoTransacao tipo, Dinheiro valor)
     {
         Tipo = tipo;
         Valor = valor;

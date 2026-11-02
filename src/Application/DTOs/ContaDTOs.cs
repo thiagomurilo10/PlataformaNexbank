@@ -9,7 +9,8 @@ public record ContaResponse(
     string Titular,
     string Cpf,
     decimal Saldo,
-    string Moeda);
+    string Moeda,
+    string Status);
 
 // DTO de entrada para depósito.
 public record DepositarRequest(decimal Valor);

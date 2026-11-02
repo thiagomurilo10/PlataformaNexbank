@@ -13,12 +13,16 @@ public class ApiExceptionHandler : IExceptionHandler
         Exception exception,
         CancellationToken cancellationToken)
     {
-        // Mapeia cada tipo de exceção para o status HTTP correspondente. SaldoInsuficienteException e ArgumentException → 400.
-        // KeyNotFoundException indica recurso não encontrado → 404. Qualquer outra exceção é tratada como erro inesperado → 500, sem vazar detalhes internos.
+        // Mapeamento exceção → status HTTP. A ordem importa: tipos específicos antes dos genéricos.
+        // CpfJaCadastradoException → 409 (conflito com recurso existente). Vem antes de DomainException, da qual herda.
+        // DomainException → 422: requisição bem formada, mas viola regra de negócio (saldo, status da conta...).
+        // ArgumentException → 400: dado de entrada inválido.
+        // 404 não passa por aqui: os endpoints retornam NotFound quando o use case devolve null.
+        // Qualquer outra → 500, sem vazar detalhes internos.
         var (status, title) = exception switch
         {
-            SaldoInsuficienteException => (StatusCodes.Status400BadRequest, exception.Message),
             CpfJaCadastradoException => (StatusCodes.Status409Conflict, exception.Message),
+            DomainException => (StatusCodes.Status422UnprocessableEntity, exception.Message),
             ArgumentException => (StatusCodes.Status400BadRequest, exception.Message),
             _ => (StatusCodes.Status500InternalServerError, "Erro interno no servidor.")
         };
