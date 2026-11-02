@@ -2,10 +2,9 @@
 using PlataformaNexbank.Application.Tests.Fakes;
 using PlataformaNexbank.Application.UseCases;
 using PlataformaNexbank.Domain.Entities;
+using PlataformaNexbank.Domain.Exceptions;
 using PlataformaNexbank.Domain.Tests;
 using PlataformaNexbank.Domain.ValueObjects;
-using System;
-using Xunit;
 
 namespace PlataformaNexbank.Application.Tests.UseCases;
 
@@ -47,5 +46,19 @@ public class DepositarUseCaseTests
 
         Assert.Throws<ArgumentException>(() =>
             useCase.Executar(conta.Id, new DepositarRequest(-10m)));
+    }
+
+    [Fact]
+    public void Executar_ComContaBloqueada_DevePropagarContaNaoAtivaException()
+    {
+        var repositorio = new ContaBancariaRepositorioFake();
+        var conta = new ContaBancaria(TitularBuilder.Padrao);
+        conta.Bloquear();
+        repositorio.Adicionar(conta);
+
+        var useCase = new DepositarUseCase(repositorio);
+
+        Assert.Throws<ContaNaoAtivaException>(() =>
+            useCase.Executar(conta.Id, new DepositarRequest(100m)));
     }
 }
