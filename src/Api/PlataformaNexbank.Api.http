@@ -123,6 +123,83 @@ POST {{PlataformaNexbank.Api_HostAddress}}/contas/{{contaStatus.response.body.$.
 ### Encerrar de novo (422)
 POST {{PlataformaNexbank.Api_HostAddress}}/contas/{{contaStatus.response.body.$.id}}/encerrar
 
-### Saque acima do saldo em outra conta (agora 422, antes 400)
+### Criar conta (CPF novo: 201; se repetir, 409 e o resto da cadeia quebra)
+# @name contaEventos
+POST {{PlataformaNexbank.Api_HostAddress}}/contas
+Content-Type: application/json
+
+{
+  "nome": "Carlos Pereira",
+  "cpf": "453.178.287-91"
+}
+
+### Dia 11 - depositar 200 (200, saldo 200)
+POST {{PlataformaNexbank.Api_HostAddress}}/contas/{{contaEventos.response.body.$.id}}/depositar
+Content-Type: application/json
+
+{
+  "valor": 200
+}
+
+### Dia 11 - sacar 50 (200, saldo 150)
+POST {{PlataformaNexbank.Api_HostAddress}}/contas/{{contaEventos.response.body.$.id}}/sacar
+Content-Type: application/json
+
+{
+  "valor": 50
+}
+
+### Dia 11 - sacar acima do saldo (422)
+POST {{PlataformaNexbank.Api_HostAddress}}/contas/{{contaEventos.response.body.$.id}}/sacar
+Content-Type: application/json
+
+{
+  "valor": 1000
+}
+
+### Dia 11 - bloquear (200, status Bloqueada)
+POST {{PlataformaNexbank.Api_HostAddress}}/contas/{{contaEventos.response.body.$.id}}/bloquear
+
+### Dia 11 - depositar em conta bloqueada (422)
+POST {{PlataformaNexbank.Api_HostAddress}}/contas/{{contaEventos.response.body.$.id}}/depositar
+Content-Type: application/json
+
+{
+  "valor": 10
+}
+
+### Dia 11 - desbloquear (200, status Ativa)
+POST {{PlataformaNexbank.Api_HostAddress}}/contas/{{contaEventos.response.body.$.id}}/desbloquear
+
+### Dia 11 - encerrar com saldo (422)
+POST {{PlataformaNexbank.Api_HostAddress}}/contas/{{contaEventos.response.body.$.id}}/encerrar
+
+### Dia 11 - sacar o saldo restante (200, saldo 0)
+POST {{PlataformaNexbank.Api_HostAddress}}/contas/{{contaEventos.response.body.$.id}}/sacar
+Content-Type: application/json
+
+{
+  "valor": 150
+}
+
+### Dia 11 - encerrar (200, status Encerrada)
+POST {{PlataformaNexbank.Api_HostAddress}}/contas/{{contaEventos.response.body.$.id}}/encerrar
+
+### Dia 11 - depositar em conta encerrada (422)
+POST {{PlataformaNexbank.Api_HostAddress}}/contas/{{contaEventos.response.body.$.id}}/depositar
+Content-Type: application/json
+
+{
+  "valor": 10
+}
+
+### Dia 11 - histórico (200, deposito 200, saque 50, saque 150, nessa ordem)
+GET {{PlataformaNexbank.Api_HostAddress}}/contas/{{contaEventos.response.body.$.id}}/transacoes
+Accept: application/json
+
+### Dia 11 - buscar conta (após reiniciar a API: 200, Encerrada, saldo 0)
+GET {{PlataformaNexbank.Api_HostAddress}}/contas/091137ef-f418-4a74-8e76-b631e3095608
+Accept: application/json
+
 ### Bloquear conta inexistente (404)
 POST {{PlataformaNexbank.Api_HostAddress}}/contas/00000000-0000-0000-0000-000000000001/bloquear
