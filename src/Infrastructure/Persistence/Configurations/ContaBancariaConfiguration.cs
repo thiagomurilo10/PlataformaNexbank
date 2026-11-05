@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using PlataformaNexbank.Domain;
 using PlataformaNexbank.Domain.Entities;
 using PlataformaNexbank.Domain.ValueObjects;
-
 namespace PlataformaNexbank.Infrastructure.Persistence.Configurations;
 
 public class ContaBancariaConfiguration : IEntityTypeConfiguration<ContaBancaria>
@@ -18,6 +18,9 @@ public class ContaBancariaConfiguration : IEntityTypeConfiguration<ContaBancaria
         builder.Property(c => c.Id)
             .HasConversion(id => id.Valor, valor => ContaId.De(valor))
             .ValueGeneratedNever();
+
+        // Domain events são transitórios: existem só em memória até o despacho (dia 12) e não são persistidos.
+        builder.Ignore(c => c.DomainEvents);
 
         // Enum gravado como texto: legível no banco e imune a reordenação do enum.
         builder.Property(c => c.Status)
