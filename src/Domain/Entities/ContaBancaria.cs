@@ -1,4 +1,5 @@
 ﻿using PlataformaNexbank.Domain.Enums;
+using PlataformaNexbank.Domain.Events;
 using PlataformaNexbank.Domain.Exceptions;
 using PlataformaNexbank.Domain.ValueObjects;
 
@@ -33,6 +34,9 @@ public class ContaBancaria : AggregateRoot<ContaId>
 
         Titular = titular;
         Saldo = new Dinheiro(0);
+
+        // Registrado por último: a conta só "nasce" após o estado inicial estar completo.
+        AdicionarEvento(new ContaCriada(Id));
     }
 
     public void Depositar(decimal valor)
@@ -45,6 +49,9 @@ public class ContaBancaria : AggregateRoot<ContaId>
 
         Saldo = Saldo + dinheiro; // usa o operador + do VO
         _transacoes.Add(new Transacao(TipoTransacao.Deposito, dinheiro));
+
+        // Evento só após validações e mudança de estado concluídas.
+        AdicionarEvento(new DepositoRealizado(Id, dinheiro, Saldo));
     }
 
     public void Sacar(decimal valor)
@@ -60,6 +67,8 @@ public class ContaBancaria : AggregateRoot<ContaId>
 
         Saldo = Saldo - dinheiro;
         _transacoes.Add(new Transacao(TipoTransacao.Saque, dinheiro));
+
+        AdicionarEvento(new SaqueRealizado(Id, dinheiro, Saldo));
     }
 
     public void Bloquear()
@@ -68,6 +77,8 @@ public class ContaBancaria : AggregateRoot<ContaId>
             throw new TransicaoStatusInvalidaException(Status, StatusConta.Bloqueada);
 
         Status = StatusConta.Bloqueada;
+
+        AdicionarEvento(new ContaBloqueada(Id));
     }
 
     public void Desbloquear()
@@ -76,6 +87,8 @@ public class ContaBancaria : AggregateRoot<ContaId>
             throw new TransicaoStatusInvalidaException(Status, StatusConta.Ativa);
 
         Status = StatusConta.Ativa;
+
+        AdicionarEvento(new ContaDesbloqueada(Id));
     }
 
     public void Encerrar()
@@ -88,6 +101,8 @@ public class ContaBancaria : AggregateRoot<ContaId>
             throw new ContaComSaldoException(Saldo.Valor);
 
         Status = StatusConta.Encerrada;
+
+        AdicionarEvento(new ContaEncerrada(Id));
     }
 
     // Toda movimentação financeira exige conta Ativa.
